@@ -1,0 +1,51 @@
+  - alias: 'Turn Off Outside Lights'
+    trigger:
+      platform: sun
+      event: sunrise
+    action:
+      - service: homeassistant.turn_off
+        entity_id: light.porch_light
+      - delay: 0:01
+      - service: homeassistant.turn_off
+        entity_id: light.porch_light
+      
+
+  - alias: 'Turn On Outside Lights'
+    trigger:
+      platform: sun
+      event: sunset
+      offset: '-00:15:00'
+    action:
+      - service: homeassistant.turn_on
+        entity_id: light.porch_light
+      - delay: 0:01
+      - service: homeassistant.turn_on
+        entity_id: light.porch_light
+        data:
+          brightness: 100
+      
+      
+
+
+  - alias: 'Porch Light Motion'
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001dc2247
+      to: 'on'
+    condition:
+      - condition: template
+        value_template: '{{ states.light.porch_light.attributes.brightness <= 100 }}'
+      - condition: numeric_state
+        entity_id: sun.sun
+        value_template: '{{ state.attributes.elevation }}'
+        below: 0
+    action:
+      - service: script.turn_off
+        entity_id: script.front_door_motion
+      - service: light.turn_on
+        entity_id: light.porch_light
+        data:
+          brightness: 254
+      - service: script.turn_on
+        entity_id: script.front_door_motion  
+ 

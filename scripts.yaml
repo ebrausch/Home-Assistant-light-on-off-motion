@@ -1,0 +1,13 @@
+front_door_motion:
+  sequence:
+    - delay:
+        minutes: 2
+    - condition: numeric_state
+      entity_id: sun.sun
+      value_template: '{{ state.attributes.elevation }}'
+      below: -5
+    - service: light.turn_on
+      entity_id: light.porch_light
+      data:
+        brightness: 100
+        transition: 30
